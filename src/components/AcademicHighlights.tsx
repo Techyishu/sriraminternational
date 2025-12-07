@@ -2,82 +2,106 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Microscope, Palette, Dumbbell } from "lucide-react";
+import { Star, Heart, Microscope, Palette, Dumbbell, ArrowRight } from "lucide-react";
 
 const highlights = [
     {
         title: "STEM Excellence",
         icon: Microscope,
-        image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop",
+        image: "/images/academics-hero.png",
         description: "State-of-the-art labs and robotics programs fostering innovation.",
-        color: "bg-purple-600",
+        category: "Science",
+        rating: 5,
+        price: "Top Rated"
     },
     {
         title: "Creative Arts",
         icon: Palette,
-        image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2080&auto=format&fit=crop",
+        image: "/images/gallery-hero.png",
         description: "Nurturing expression through visual arts, music, and drama.",
-        color: "bg-purple-500",
+        category: "Arts",
+        rating: 5,
+        price: "Featured"
     },
     {
-        title: "Athletics",
+        title: "Athletics Program",
         icon: Dumbbell,
-        image: "https://images.unsplash.com/photo-1526676037777-05a232554f77?q=80&w=2070&auto=format&fit=crop",
+        image: "/images/activities-hero.png",
         description: "Championing teamwork, discipline, and physical well-being.",
-        color: "bg-purple-400",
+        category: "Sports",
+        rating: 5,
+        price: "Popular"
     },
+    {
+        title: "Global Leadership",
+        icon: ArrowRight, // Placeholder
+        image: "/images/toppers-hero.png",
+        description: "Preparing students for global challenges and leadership.",
+        category: "Leadership",
+        rating: 5,
+        price: "New"
+    }
 ];
 
 export default function AcademicHighlights() {
     return (
-        <section id="academics" className="py-24 bg-white">
+        <section className="py-24 bg-stone-50">
             <div className="container mx-auto px-6">
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <span className="text-purple-600 font-medium tracking-wider uppercase text-sm">
-                        Academics & Beyond
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-6">
-                        A Curriculum for the Future
-                    </h2>
-                    <p className="text-lg text-gray-600">
-                        We provide a balanced education that integrates rigorous academics with creative and physical development.
-                    </p>
+                {/* Section Header */}
+                <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+                    <div>
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#002147]">Academic Highlights</h2>
+                        <p className="text-gray-500 mt-2">Discover our world-class programs</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <button className="bg-[#FEC301] p-2 rounded hover:bg-[#002147] hover:text-white transition-colors">
+                            <ArrowLeftIcon />
+                        </button>
+                        <button className="bg-[#FEC301] p-2 rounded hover:bg-[#002147] hover:text-white transition-colors">
+                            <ArrowRightIcon />
+                        </button>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {highlights.map((item, index) => (
                         <motion.div
-                            key={item.title}
-                            initial={{ opacity: 0, y: 50 }}
+                            key={index}
+                            initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: index * 0.2 }}
-                            className="group relative h-[500px] rounded-3xl overflow-hidden cursor-pointer shadow-lg"
+                            className="bg-white group rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-gray-100"
                         >
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors z-10" />
-                            <Image
-                                src={item.image}
-                                alt={item.title}
-                                fill
-                                className="object-cover group-hover:scale-110 transition-transform duration-700"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
-                            />
-
-                            <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end">
-                                <div className="transform translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-500">
-                                    <div className={`w-14 h-14 rounded-2xl ${item.color} text-white flex items-center justify-center mb-4 shadow-lg`}>
-                                        <item.icon size={28} />
-                                    </div>
-                                    <h3 className="text-3xl font-bold text-white mb-3">
-                                        {item.title}
-                                    </h3>
-                                    <p className="text-gray-200 mb-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                                        {item.description}
-                                    </p>
-                                    <div className="flex items-center gap-2 text-white font-medium opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-200">
-                                        Learn More <ArrowRight size={18} />
-                                    </div>
+                            {/* Image Container */}
+                            <div className="relative h-48 w-full overflow-hidden">
+                                <Image
+                                    src={item.image}
+                                    alt={item.title}
+                                    fill
+                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute top-4 left-4 bg-[#FEC301] text-[#002147] text-xs font-bold px-3 py-1 rounded">
+                                    {item.price}
                                 </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-6">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[#002147]">
+                                        <item.icon size={16} />
+                                    </div>
+                                    <span className="text-sm text-gray-500">{item.category}</span>
+                                </div>
+                                <h3 className="text-lg font-bold text-[#002147] leading-tight mb-2 group-hover:text-[#FEC301] transition-colors line-clamp-1">
+                                    {item.title}
+                                </h3>
+                                <p className="text-sm text-gray-500 mb-4 line-clamp-2 min-h-[40px]">
+                                    {item.description}
+                                </p>
+
+
                             </div>
                         </motion.div>
                     ))}
@@ -85,4 +109,16 @@ export default function AcademicHighlights() {
             </div>
         </section>
     );
+}
+
+function ArrowLeftIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+    )
+}
+
+function ArrowRightIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+    )
 }

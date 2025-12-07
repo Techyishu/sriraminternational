@@ -9,28 +9,28 @@ const stats = [
         label: "Trusted by Parents",
         value: "150+",
         icon: Users,
-        color: "bg-purple-100 text-purple-600",
+        color: "bg-[#FEC301] text-[#002147]",
         description: "Families who have entrusted us with their children's education.",
     },
     {
         label: "Proven Success",
         value: "15",
         icon: Trophy,
-        color: "bg-purple-100 text-purple-600",
+        color: "bg-[#FEC301] text-[#002147]",
         description: "Personalized attention for every student's growth.",
     },
     {
         label: "AP Courses",
         value: "25+",
         icon: BookOpen,
-        color: "bg-purple-100 text-purple-600",
+        color: "bg-[#FEC301] text-[#002147]",
         description: "Rigorous academic curriculum for advanced learning.",
     },
     {
         label: "Nationalities",
         value: "40+",
         icon: Globe,
-        color: "bg-purple-100 text-purple-600",
+        color: "bg-[#FEC301] text-[#002147]",
         description: "A diverse community fostering global perspectives.",
     },
 ];
@@ -50,16 +50,16 @@ export default function Stats() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
                         <Image
-                            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop"
+                            src="/images/activities-hero.png"
                             alt="Student Life"
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-700"
                             sizes="(max-width: 768px) 100vw, 33vw"
                         />
                         <div className="absolute bottom-8 left-8 z-20 text-white">
-                        <h3 className="text-2xl font-bold mb-2">
-                            Life at Sriram
-                        </h3>
+                            <h3 className="text-2xl font-bold mb-2">
+                                Life at Sriram
+                            </h3>
                             <p className="text-gray-200">
                                 Experience a vibrant community dedicated to holistic growth.
                             </p>
@@ -75,7 +75,7 @@ export default function Stats() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all border border-purple-100 group hover:border-purple-200"
+                                className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all border border-gray-100 group hover:border-[#FEC301]/20"
                             >
                                 <div
                                     className={`w-12 h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}

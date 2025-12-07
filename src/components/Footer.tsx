@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function Footer() {
     return (
-        <footer className="bg-gray-900 text-white pt-20 pb-10">
+        <footer className="bg-[#00152e] text-white pt-20 pb-10">
             <div className="container mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     {/* Brand */}
@@ -31,7 +31,7 @@ export default function Footer() {
                                 <a
                                     key={i}
                                     href="#"
-                                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors"
+                                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#FEC301] hover:text-[#002147] transition-colors"
                                 >
                                     <Icon size={18} />
                                 </a>
@@ -45,7 +45,7 @@ export default function Footer() {
                         <ul className="space-y-4 text-gray-400">
                             {["About Us", "Admissions", "Academics", "Campus Life", "News & Events", "Contact"].map((link) => (
                                 <li key={link}>
-                                    <a href="#" className="hover:text-primary transition-colors">
+                                    <a href="#" className="hover:text-[#FEC301] transition-colors">
                                         {link}
                                     </a>
                                 </li>
@@ -79,7 +79,7 @@ export default function Footer() {
                                     className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                                 />
                             </div>
-                            <button className="bg-primary hover:bg-blue-600 text-white py-3 rounded-xl font-medium transition-colors">
+                            <button className="bg-[#FEC301] hover:bg-white hover:text-[#002147] text-[#002147] py-3 rounded-xl font-bold transition-colors">
                                 Subscribe
                             </button>
                         </div>
