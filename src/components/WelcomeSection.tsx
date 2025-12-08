@@ -21,10 +21,10 @@ export default function WelcomeSection() {
                         </h2>
                         <div className="space-y-6 text-gray-600 leading-relaxed text-lg">
                             <p>
-                                Simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                At SR INTERNATIONAL, we believe in nurturing young minds through a holistic approach to education. Our campus provides a vibrant learning environment where students are encouraged to explore, innovate, and excel in all aspects of their development.
                             </p>
                             <p>
-                                It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+                                With state-of-the-art facilities, experienced faculty, and a curriculum designed to foster critical thinking and creativity, we prepare our students to become confident leaders and responsible global citizens. Our commitment to excellence extends beyond academics, encompassing sports, arts, and character building.
                             </p>
                         </div>
                         <button className="bg-[#FEC301] text-[#002147] px-8 py-3 font-bold uppercase tracking-wide hover:bg-[#002147] hover:text-white transition-all shadow-md mt-4">

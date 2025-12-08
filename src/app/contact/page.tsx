@@ -1,9 +1,110 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, Facebook, Instagram, Twitter } from "lucide-react";
+
+function ContactForm() {
+    const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+    const [submitting, setSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        try {
+            const response = await fetch("/api/contact/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                setSubmitted(true);
+                setFormData({ name: "", email: "", subject: "", message: "" });
+                setTimeout(() => setSubmitted(false), 5000);
+            } else {
+                alert("Failed to send message. Please try again.");
+            }
+        } catch (error) {
+            alert("Failed to send message. Please try again.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-6">
+            {submitted && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl">
+                    Message sent successfully! We'll get back to you soon.
+                </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium text-gray-700 ml-1">Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white/50 backdrop-blur-sm focus:bg-white"
+                        placeholder="Your Name"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium text-gray-700 ml-1">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white/50 backdrop-blur-sm focus:bg-white"
+                        placeholder="your@email.com"
+                    />
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <label htmlFor="subject" className="text-sm font-medium text-gray-700 ml-1">Subject</label>
+                <input
+                    type="text"
+                    id="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white/50 backdrop-blur-sm focus:bg-white"
+                    placeholder="Inquiry about..."
+                />
+            </div>
+
+            <div className="space-y-2">
+                <label htmlFor="message" className="text-sm font-medium text-gray-700 ml-1">Message</label>
+                <textarea
+                    id="message"
+                    rows={4}
+                    required
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none bg-white/50 backdrop-blur-sm focus:bg-white"
+                    placeholder="Your message here..."
+                ></textarea>
+            </div>
+
+            <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group disabled:opacity-50"
+            >
+                {submitting ? "Sending..." : "Send Message"}
+                <Send size={20} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+        </form>
+    );
+}
 
 export default function ContactPage() {
     const containerRef = useRef(null);
@@ -86,7 +187,7 @@ export default function ContactPage() {
                             className="mt-12 h-64 rounded-2xl overflow-hidden shadow-inner border border-gray-200"
                         >
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.688636734674!2d77.3478953150824!3d28.61189598242596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce50000000001%3A0x1234567890abcdef!2sSriram%20International%20School!5e0!3m2!1sen!2sin!4v1634567890123!5m2!1sen!2sin"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.688636734674!2d77.3478953150824!3d28.61189598242596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce50000000001%3A0x1234567890abcdef!2sSR%20INTERNATIONAL!5e0!3m2!1sen!2sin!4v1634567890123!5m2!1sen!2sin"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0, filter: "grayscale(100%)" }}
@@ -112,56 +213,7 @@ export default function ContactPage() {
                             <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2">Send us a Message</h2>
                             <p className="text-gray-600 mb-8">We'd love to hear from you. Fill out the form below.</p>
 
-                            <form className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label htmlFor="name" className="text-sm font-medium text-gray-700 ml-1">Name</label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white/50 backdrop-blur-sm focus:bg-white"
-                                            placeholder="Your Name"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label htmlFor="email" className="text-sm font-medium text-gray-700 ml-1">Email</label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white/50 backdrop-blur-sm focus:bg-white"
-                                            placeholder="your@email.com"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label htmlFor="subject" className="text-sm font-medium text-gray-700 ml-1">Subject</label>
-                                    <input
-                                        type="text"
-                                        id="subject"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white/50 backdrop-blur-sm focus:bg-white"
-                                        placeholder="Inquiry about..."
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label htmlFor="message" className="text-sm font-medium text-gray-700 ml-1">Message</label>
-                                    <textarea
-                                        id="message"
-                                        rows={4}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none bg-white/50 backdrop-blur-sm focus:bg-white"
-                                        placeholder="Your message here..."
-                                    ></textarea>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    className="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
-                                >
-                                    Send Message
-                                    <Send size={20} className="group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </form>
+                            <ContactForm />
                         </motion.div>
                     </div>
                 </div>

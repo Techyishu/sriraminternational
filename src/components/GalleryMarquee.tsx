@@ -1,14 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const images = [
-    "/images/facilities-hero.png",
-    "/images/admissions-hero.png",
-    "/images/staff-hero.png",
-    "/images/contact-hero.png",
-    "/images/about-hero.png",
-    "/images/academics-hero.png",
+    "/images/mov_7181-YbNvjR4LjLsaMPjN.jpg",
+    "/images/whatsapp-image-2023-09-06-at-5.36.44-am.jpeg-mv0DGRPPoPfVQnXv.jpg",
+    "/images/whatsapp-image-2024-03-10-at-6.30.48-pm.jpeg-AGB6XwzzlNfQpNag.jpg",
+    "/images/whatsapp-image-2024-12-09-at-17.53.59_a545b9dd-AzGeolMMpVH7B2RL.jpg",
+    "/images/whatsapp-image-2024-12-09-at-17.54.00_9cb5ef76-ALpnK42Wvns3O2lK.jpg",
+    "/images/whatsapp-image-2024-12-11-at-09.39.58_cfab3f28-AoPvjXEbpZuapNXx.jpg",
 ];
 
 export default function GalleryMarquee() {
@@ -19,7 +20,7 @@ export default function GalleryMarquee() {
                     Campus Life
                 </h2>
                 <p className="text-lg text-gray-600">
-                    Moments that define the Sriram experience.
+                    Moments that define the SR INTERNATIONAL experience.
                 </p>
             </div>
 
@@ -42,10 +43,12 @@ export default function GalleryMarquee() {
                             key={`gallery-${index}`}
                             className="relative w-[300px] md:w-[400px] h-[200px] md:h-[250px] rounded-2xl overflow-hidden shadow-md shrink-0"
                         >
-                            <img
+                            <Image
                                 src={src}
-                                alt={`Gallery ${index}`}
-                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                                alt={`Campus Life ${index + 1}`}
+                                fill
+                                className="object-cover hover:scale-110 transition-transform duration-500"
+                                sizes="(max-width: 768px) 300px, 400px"
                             />
                         </div>
                     ))}

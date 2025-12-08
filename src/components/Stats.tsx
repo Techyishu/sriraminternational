@@ -50,7 +50,7 @@ export default function Stats() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
                         <Image
-                            src="/images/activities-hero.png"
+                            src="/images/whatsapp-image-2024-12-11-at-09.39.58_cfab3f28-AoPvjXEbpZuapNXx.jpg"
                             alt="Student Life"
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -58,7 +58,7 @@ export default function Stats() {
                         />
                         <div className="absolute bottom-8 left-8 z-20 text-white">
                             <h3 className="text-2xl font-bold mb-2">
-                                Life at Sriram
+                                Life at SR INTERNATIONAL
                             </h3>
                             <p className="text-gray-200">
                                 Experience a vibrant community dedicated to holistic growth.

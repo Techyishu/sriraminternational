@@ -8,33 +8,33 @@ import { Library, Monitor, FlaskConical, Trophy, Bus, Utensils } from "lucide-re
 const facilities = [
     {
         icon: Library,
-        title: "Library",
-        description: "A well-stocked library with a vast collection of books, journals, and digital resources."
+        title: "Library & Learning Resource Center",
+        description: "A well-stocked library with over 15,000 books, journals, periodicals, and digital resources. Our library provides a quiet, conducive environment for research and study, with dedicated reading areas and computer stations for accessing online databases and e-books."
     },
     {
         icon: Monitor,
         title: "Computer Labs",
-        description: "State-of-the-art computer labs with high-speed internet and modern software."
+        description: "State-of-the-art computer laboratories equipped with the latest hardware and software. High-speed internet connectivity, multimedia projectors, and modern workstations ensure students have access to cutting-edge technology for learning programming, digital design, and research."
     },
     {
         icon: FlaskConical,
-        title: "Science Labs",
-        description: "Fully equipped physics, chemistry, and biology labs for practical learning."
+        title: "Science Laboratories",
+        description: "Fully equipped physics, chemistry, and biology laboratories designed to meet international standards. Our labs feature modern equipment, safety protocols, and hands-on learning opportunities that make scientific concepts come alive through practical experimentation."
     },
     {
         icon: Trophy,
         title: "Sports Complex",
-        description: "Extensive sports facilities including basketball courts, football ground, and indoor games."
+        description: "Extensive sports facilities including a large playground for cricket and football, basketball courts, volleyball courts, and indoor games facilities. We also have a well-maintained athletics track and facilities for table tennis, badminton, and other indoor sports."
     },
     {
         icon: Bus,
-        title: "Transport",
-        description: "Safe and reliable transport facility covering all major routes in the city."
+        title: "Transport Services",
+        description: "Safe and reliable transport facility with GPS-enabled buses covering all major routes in the city and surrounding areas. Our fleet is regularly maintained, and all drivers are trained professionals committed to student safety."
     },
     {
         icon: Utensils,
-        title: "Cafeteria",
-        description: "Hygienic and nutritious food served in a clean and spacious cafeteria."
+        title: "Cafeteria & Dining",
+        description: "A spacious, hygienic cafeteria serving nutritious and balanced meals. Our kitchen follows strict hygiene standards and offers a variety of healthy food options. The dining area provides a comfortable space for students to enjoy their meals and socialize."
     }
 ];
 
@@ -60,7 +60,13 @@ export default function FacilitiesPage() {
 
             {/* Facilities Grid */}
             <div className="container mx-auto px-6 py-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                <div className="mb-12 text-center max-w-3xl mx-auto">
+                    <p className="text-gray-600 text-lg leading-relaxed">
+                        At SR INTERNATIONAL, we believe that excellent facilities are fundamental to quality education. Our campus is equipped with modern infrastructure designed to support comprehensive learning and holistic development.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
                     {facilities.map((facility, index) => (
                         <motion.div
                             key={index}
@@ -82,6 +88,33 @@ export default function FacilitiesPage() {
                         </motion.div>
                     ))}
                 </div>
+
+                {/* Additional Facilities Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-gradient-to-r from-[#002147] to-[#003370] rounded-3xl p-12 text-white"
+                >
+                    <h2 className="text-3xl font-bold mb-8 text-center">Additional Amenities</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            "Smart Classrooms with Interactive Boards",
+                            "Medical Room with First Aid",
+                            "Security & CCTV Surveillance",
+                            "Wi-Fi Enabled Campus",
+                            "Auditorium for Events",
+                            "Art & Music Rooms",
+                            "Prayer Hall",
+                            "Parking Facilities"
+                        ].map((amenity, index) => (
+                            <div key={index} className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-[#FEC301] rounded-full" />
+                                <span className="text-gray-200">{amenity}</span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
         </main>
     );

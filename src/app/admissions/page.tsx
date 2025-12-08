@@ -67,7 +67,7 @@ export default function AdmissionsPage() {
                         <h1 className="text-4xl md:text-7xl font-serif font-bold text-gray-900 mb-6 tracking-tight">Admissions</h1>
                         <div className="h-1.5 w-24 bg-primary mx-auto rounded-full mb-6" />
                         <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light">
-                            Join the Sriram International Family
+                            Join the SR INTERNATIONAL Family
                         </p>
                     </motion.div>
                 </div>
@@ -78,7 +78,7 @@ export default function AdmissionsPage() {
                 <div className="text-center mb-16">
                     <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Admission Process</h2>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        A simple and transparent journey to becoming part of the Sriram International family.
+                        A simple and transparent journey to becoming part of the SR INTERNATIONAL family.
                     </p>
                 </div>
 

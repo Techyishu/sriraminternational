@@ -8,7 +8,7 @@ const highlights = [
     {
         title: "STEM Excellence",
         icon: Microscope,
-        image: "/images/academics-hero.png",
+        image: "/images/whatsapp-image-2024-12-09-at-17.53.59_a545b9dd-AzGeolMMpVH7B2RL.jpg",
         description: "State-of-the-art labs and robotics programs fostering innovation.",
         category: "Science",
         rating: 5,
@@ -17,7 +17,7 @@ const highlights = [
     {
         title: "Creative Arts",
         icon: Palette,
-        image: "/images/gallery-hero.png",
+        image: "/images/whatsapp-image-2024-12-09-at-17.54.00_9cb5ef76-ALpnK42Wvns3O2lK.jpg",
         description: "Nurturing expression through visual arts, music, and drama.",
         category: "Arts",
         rating: 5,
@@ -26,7 +26,7 @@ const highlights = [
     {
         title: "Athletics Program",
         icon: Dumbbell,
-        image: "/images/activities-hero.png",
+        image: "/images/mov_7181-YbNvjR4LjLsaMPjN.jpg",
         description: "Championing teamwork, discipline, and physical well-being.",
         category: "Sports",
         rating: 5,
@@ -34,8 +34,8 @@ const highlights = [
     },
     {
         title: "Global Leadership",
-        icon: ArrowRight, // Placeholder
-        image: "/images/toppers-hero.png",
+        icon: ArrowRight,
+        image: "/images/whatsapp-image-2024-03-10-at-6.30.48-pm.jpeg-AGB6XwzzlNfQpNag.jpg",
         description: "Preparing students for global challenges and leadership.",
         category: "Leadership",
         rating: 5,

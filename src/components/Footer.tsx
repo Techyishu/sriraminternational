@@ -14,13 +14,13 @@ export default function Footer() {
                             <div className="relative w-10 h-10">
                                 <Image
                                     src="/images/SR_INTERNATIONAL_LOGO_1.png"
-                                    alt="Sriram International Logo"
+                                    alt="SR INTERNATIONAL Logo"
                                     fill
                                     className="object-contain"
                                 />
                             </div>
                             <span className="text-xl font-serif font-bold">
-                                Sriram International
+                                SR INTERNATIONAL
                             </span>
                         </div>
                         <p className="text-gray-400 leading-relaxed">
@@ -87,7 +87,7 @@ export default function Footer() {
                 </div>
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
-                    <p>© 2025 Sriram International School. All rights reserved.</p>
+                    <p>© 2025 SR INTERNATIONAL. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

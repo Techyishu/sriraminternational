@@ -5,27 +5,6 @@ import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { History, Target, Eye, Award, Users, BookOpen } from "lucide-react";
 
-const teamMembers = [
-    {
-        name: "Dr. Rajesh Kumar",
-        role: "Principal",
-        image: "/images/team-principal.png",
-        bio: "With over 30 years of experience in education, Dr. Kumar leads with wisdom and a vision for holistic growth.",
-    },
-    {
-        name: "Mrs. Sarah Jenkins",
-        role: "Vice Principal",
-        image: "/images/team-vice-principal.png",
-        bio: "A champion of innovative teaching methods, Mrs. Jenkins ensures our curriculum stays ahead of the curve.",
-    },
-    {
-        name: "Mr. Amit Patel",
-        role: "Head of Academics",
-        image: "/images/team-head-academics.png",
-        bio: "Dedicated to academic excellence, Mr. Patel oversees our rigorous and diverse educational programs.",
-    },
-];
-
 const timelineEvents = [
     { year: "1995", title: "Foundation", description: "Established with a vision to provide quality education to the community." },
     { year: "2005", title: "Expansion", description: "Added new wings for Science and Arts, expanding our capacity to 1000 students." },
@@ -77,7 +56,7 @@ export default function AboutPage() {
                             </div>
                             <h2 className="text-4xl font-serif font-bold text-gray-900">A Tradition of Excellence</h2>
                             <p className="text-gray-600 text-lg leading-relaxed">
-                                Founded with a vision to provide world-class education, Sriram International has been a beacon of learning and excellence. Our journey began with a humble commitment to nurture young minds and has grown into a premier institution known for its holistic approach to education.
+                                Founded with a vision to provide world-class education, SR INTERNATIONAL has been a beacon of learning and excellence. Our journey began with a humble commitment to nurture young minds and has grown into a premier institution known for its holistic approach to education.
                             </p>
                         </motion.div>
                         <motion.div
@@ -161,47 +140,6 @@ export default function AboutPage() {
                             </motion.div>
                         ))}
                     </div>
-                </div>
-            </section>
-
-            {/* Team Section */}
-            <section className="py-24 container mx-auto px-6">
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Meet Our Leadership</h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Guided by experienced educators and visionaries dedicated to shaping the future of education.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {teamMembers.map((member, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.2 }}
-                            className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer"
-                        >
-                            <Image
-                                src={member.image}
-                                alt={member.name}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-
-                            <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-300">
-                                <h3 className="text-2xl font-bold text-white mb-1">{member.name}</h3>
-                                <p className="text-primary-foreground/80 font-medium mb-4">{member.role}</p>
-                                <div className="h-auto md:h-0 md:group-hover:h-auto overflow-hidden transition-all duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                                    <p className="text-gray-200 text-sm leading-relaxed">
-                                        {member.bio}
-                                    </p>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
                 </div>
             </section>
         </main>

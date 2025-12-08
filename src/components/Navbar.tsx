@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-    Menu, X, Phone, Mail, MapPin, Search, User,
+    Menu, X, Phone, Mail, MapPin, Search,
     Facebook, Twitter, Instagram, Linkedin, ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -54,11 +54,7 @@ export default function Navbar() {
                         </div>
                     </div>
                     <div className="flex items-center gap-6">
-                        <Link href="/login" className="flex items-center gap-2 hover:text-[#FEC301] transition-colors">
-                            <User size={14} />
-                            <span>Login / Register</span>
-                        </Link>
-                        <div className="flex items-center gap-3 border-l border-white/20 pl-4">
+                        <div className="flex items-center gap-3">
                             <Link href="#" className="hover:text-[#FEC301] transition-colors"><Facebook size={14} /></Link>
                             <Link href="#" className="hover:text-[#FEC301] transition-colors"><Twitter size={14} /></Link>
                             <Link href="#" className="hover:text-[#FEC301] transition-colors"><Instagram size={14} /></Link>
@@ -78,7 +74,7 @@ export default function Navbar() {
                                 {/* Using a placeholder logo style if image fails, but keeping original path */}
                                 <Image
                                     src="/images/SR_INTERNATIONAL_LOGO_1.png"
-                                    alt="Sriram International"
+                                    alt="SR INTERNATIONAL"
                                     fill
                                     className="object-contain"
                                 />
@@ -147,9 +143,6 @@ export default function Navbar() {
                                 </Link>
                             ))}
                             <div className="pt-6 space-y-4">
-                                <Link href="/login" className="flex items-center gap-3 text-white hover:text-[#FEC301]">
-                                    <User size={20} /> Login / Register
-                                </Link>
                                 <div className="flex items-center gap-4 text-white/70">
                                     <Facebook size={20} />
                                     <Twitter size={20} />
