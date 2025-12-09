@@ -41,10 +41,33 @@ export default function AdminPanel() {
     // Check if user is already logged in
     const storedToken = localStorage.getItem("admin_token");
     if (storedToken) {
-      setToken(storedToken);
-      setIsAuthenticated(true);
-      setLoading(false);
-      loadData();
+      // Validate token before using it
+      try {
+        // Decode token to check expiration (without verification, just to check expiry)
+        const payload = JSON.parse(atob(storedToken.split('.')[1]));
+        const now = Math.floor(Date.now() / 1000);
+        
+        if (payload.exp && payload.exp < now) {
+          // Token expired, remove it
+          localStorage.removeItem("admin_token");
+          setToken(null);
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
+        
+        setToken(storedToken);
+        setIsAuthenticated(true);
+        setLoading(false);
+        loadData();
+      } catch (error) {
+        // Invalid token format, remove it
+        console.error("Invalid token format:", error);
+        localStorage.removeItem("admin_token");
+        setToken(null);
+        setIsAuthenticated(false);
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
@@ -273,15 +296,39 @@ export default function AdminPanel() {
         headers,
       });
 
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error("Failed to parse response:", parseError);
+        data = { error: "Invalid response from server" };
+      }
+
       if (response.ok) {
         alert("Item deleted successfully!");
         loadData();
       } else {
-        const data = await response.json();
-        alert(data.error || "Failed to delete item");
+        // Handle 401 Unauthorized - token might be invalid or expired
+        if (response.status === 401) {
+          console.error("Authentication failed. Token may be expired or invalid.");
+          localStorage.removeItem("admin_token");
+          setToken(null);
+          setIsAuthenticated(false);
+          alert("Your session has expired. Please login again.");
+          return;
+        }
+        
+        console.error("Delete error:", {
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        });
+        alert(data.error || `Failed to delete item (${response.status})`);
       }
     } catch (error) {
-      alert("Failed to delete item");
+      console.error("Delete request error:", error);
+      alert("Failed to delete item: " + (error instanceof Error ? error.message : "Unknown error"));
     }
   };
 

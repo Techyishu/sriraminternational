@@ -1,7 +1,7 @@
 /**
- * Script to create an admin user in Supabase
+ * Script to update an admin user's password in Supabase
  * 
- * Usage: node scripts/create-admin.js <email> <password>
+ * Usage: node scripts/update-admin-password.js <email> <new-password>
  * 
  * Make sure to set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env.local file
  */
@@ -34,52 +34,63 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error('Error: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
+  console.error('You can set them in your .env.local file or as environment variables');
   process.exit(1);
 }
 
 const email = process.argv[2];
-const password = process.argv[3];
+const newPassword = process.argv[3];
 
-if (!email || !password) {
-  console.error('Usage: node scripts/create-admin.js <email> <password>');
+if (!email || !newPassword) {
+  console.error('Usage: node scripts/update-admin-password.js <email> <new-password>');
+  console.error('\nExample:');
+  console.error('  node scripts/update-admin-password.js admin@example.com MyNewPassword123');
   process.exit(1);
 }
 
-async function createAdmin() {
+async function updateAdminPassword() {
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
+    // Check if admin user exists
+    const { data: existingAdmin, error: fetchError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !existingAdmin) {
+      console.error(`Error: Admin user with email "${email}" not found`);
+      process.exit(1);
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(newPassword, 10);
     
-    // Insert admin user
+    // Update admin user password
     const { data, error } = await supabase
       .from('admin_users')
-      .insert({
-        email: email,
+      .update({
         password_hash: passwordHash
       })
+      .eq('email', email)
       .select()
       .single();
 
     if (error) {
-      if (error.code === '23505') {
-        console.error('Error: Admin user with this email already exists');
-      } else {
-        console.error('Error creating admin:', error);
-      }
+      console.error('Error updating password:', error.message);
       process.exit(1);
     }
 
-    console.log('✅ Admin user created successfully!');
+    console.log('✅ Admin password updated successfully!');
     console.log('Email:', data.email);
     console.log('ID:', data.id);
-    console.log('\nYou can now login at /admin');
+    console.log('\nYou can now login with the new password at /admin');
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);
   }
 }
 
-createAdmin();
+updateAdminPassword();
 

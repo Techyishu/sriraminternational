@@ -62,8 +62,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { verify } = await import('jsonwebtoken');
-    verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+    // Verify token
+    try {
+      const { verify } = await import('jsonwebtoken');
+      verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+    } catch (error: any) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -74,18 +79,21 @@ export async function DELETE(request: NextRequest) {
 
     const supabaseAdmin = createServerClient();
 
-    const { error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from('gallery_images')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select();
 
     if (error) {
+      console.error('Supabase delete error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, deleted: data });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Delete error:', error);
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
 
