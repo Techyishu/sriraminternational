@@ -1,48 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { usePageContent } from "@/hooks/usePageContent";
 
-const defaultContent = {
-    hero: {
-        title: "Our Staff",
-        subtitle: "The Pillars of Our Institution"
-    },
-    description: "Our faculty members are the cornerstone of our educational excellence. With years of experience, advanced qualifications, and a passion for teaching, they create an inspiring learning environment that nurtures every student's potential.",
-    categories: [
-        { title: "Senior Faculty", count: "25+", description: "Experienced educators with advanced degrees" },
-        { title: "Subject Specialists", count: "40+", description: "Experts in their respective fields" },
-        { title: "Support Staff", count: "30+", description: "Dedicated administrative and support team" },
-        { title: "Counselors", count: "5+", description: "Student guidance and career counseling" }
-    ],
-    highlights: [
-        {
-            title: "Qualified & Experienced",
-            description: "All our teachers hold advanced degrees in their subjects and undergo regular professional development to stay updated with the latest teaching methodologies.",
-            icon: "🎓"
-        },
-        {
-            title: "Student-Centered Approach",
-            description: "Our faculty focuses on individual attention, understanding each student's learning style and providing personalized guidance for academic success.",
-            icon: "👨‍🏫"
-        },
-        {
-            title: "Innovative Teaching Methods",
-            description: "We employ modern teaching techniques including interactive sessions, project-based learning, and technology-integrated classrooms to make learning engaging and effective.",
-            icon: "💡"
-        }
-    ]
+const heroContent = {
+    title: "Our Staff",
+    subtitle: "The Pillars of Our Institution"
 };
 
 export default function StaffPage() {
-    const { content, loading } = usePageContent('staff');
-    
-    const heroContent = content.hero || defaultContent.hero;
-    const description = content.description || defaultContent.description;
-    const categories = content.categories || defaultContent.categories;
-    const highlights = content.highlights || defaultContent.highlights;
+    const [staff, setStaff] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStaff = async () => {
+            try {
+                const response = await fetch("/api/staff");
+                const data = await response.json();
+                setStaff(data.staff || []);
+            } catch (error) {
+                console.error("Error fetching staff:", error);
+                setStaff([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStaff();
+    }, []);
 
     if (loading) {
         return (
@@ -73,47 +59,52 @@ export default function StaffPage() {
 
             {/* Staff Content */}
             <div className="container mx-auto px-6 py-20">
-                <div className="mb-12 text-center max-w-3xl mx-auto">
-                    <p className="text-gray-600 text-lg leading-relaxed">
-                        {description}
-                    </p>
-                </div>
-
-                {/* Faculty Categories */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                    {categories.map((category: any, index: number) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center"
-                        >
-                            <div className="text-4xl font-bold text-[#002147] mb-2">{category.count}</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">{category.title}</h3>
-                            <p className="text-sm text-gray-600">{category.description}</p>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Faculty Highlights */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {highlights.map((highlight: any, index: number) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
-                        >
-                            <div className="text-5xl mb-4">{highlight.icon}</div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-4">{highlight.title}</h3>
-                            <p className="text-gray-600 leading-relaxed">{highlight.description}</p>
-                        </motion.div>
-                    ))}
-                </div>
+                {/* Staff Grid */}
+                {staff.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {staff.map((member: any, index: number) => (
+                            <motion.div
+                                key={member.id || index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center"
+                            >
+                                {member.image_url && (
+                                    <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden">
+                                        <Image
+                                            src={member.image_url}
+                                            alt={member.name}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                )}
+                                <h3 className="text-2xl font-bold text-[#002147] mb-2">{member.name}</h3>
+                                {member.designation && (
+                                    <p className="text-lg text-gray-600 mb-3">{member.designation}</p>
+                                )}
+                                {member.qualification && (
+                                    <p className="text-sm text-gray-500 mb-2">{member.qualification}</p>
+                                )}
+                                {member.experience && (
+                                    <p className="text-sm text-gray-500 mb-3">Experience: {member.experience}</p>
+                                )}
+                                {member.bio && (
+                                    <p className="text-sm text-gray-600 leading-relaxed">{member.bio}</p>
+                                )}
+                                {member.email && (
+                                    <p className="text-sm text-blue-600 mt-3">{member.email}</p>
+                                )}
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20">
+                        <p className="text-gray-500 text-lg">No staff members available yet. Check back soon!</p>
+                    </div>
+                )}
             </div>
         </main>
     );

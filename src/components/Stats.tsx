@@ -50,8 +50,8 @@ export default function Stats() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" />
                         <Image
-                            src="/images/whatsapp-image-2024-12-11-at-09.39.58_cfab3f28-AoPvjXEbpZuapNXx.jpg"
-                            alt="Student Life"
+                            src="/images/WhatsApp Image 2025-12-08 at 14.16.23.jpeg"
+                            alt="Student Life at SR International School"
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-700"
                             sizes="(max-width: 768px) 100vw, 33vw"

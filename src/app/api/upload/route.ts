@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
 
 // Supported image MIME types
-const ALLOWED_MIME_TYPES = [
+const ALLOWED_IMAGE_TYPES = [
   'image/png',
   'image/jpeg',
   'image/jpg',
@@ -11,7 +11,18 @@ const ALLOWED_MIME_TYPES = [
   'image/svg+xml'
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+// Supported audio MIME types
+const ALLOWED_AUDIO_TYPES = [
+  'audio/mpeg',
+  'audio/mp3',
+  'audio/ogg',
+  'audio/wav',
+  'audio/webm',
+  'audio/m4a',
+  'audio/aac'
+];
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB (increased for audio files)
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,15 +39,17 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const folder = formData.get('folder') as string || 'general';
+    const fileType = formData.get('fileType') as string || 'image'; // 'image' or 'audio'
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Validate file type
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    // Validate file type based on fileType parameter
+    const allowedTypes = fileType === 'audio' ? ALLOWED_AUDIO_TYPES : ALLOWED_IMAGE_TYPES;
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}` },
+        { error: `Invalid file type. Allowed ${fileType} types: ${allowedTypes.join(', ')}` },
         { status: 400 }
       );
     }
@@ -70,9 +83,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Determine storage bucket based on file type
+    const bucketName = fileType === 'audio' ? 'images' : 'images'; // Using same bucket for now, can be separated later
+    
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-      .from('images')
+      .from(bucketName)
       .upload(fileName, buffer, {
         contentType: file.type,
         upsert: false
@@ -85,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: urlData } = supabaseAdmin.storage
-      .from('images')
+      .from(bucketName)
       .getPublicUrl(fileName);
 
     return NextResponse.json({

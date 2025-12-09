@@ -18,6 +18,7 @@ export async function GET() {
     return NextResponse.json({
       enabled: data?.enabled ?? false,
       music_url: data?.music_url ?? '',
+      image_url: data?.image_url ?? '',
       volume: data?.volume ?? 0.5,
       loop: data?.loop ?? true
     });
@@ -56,6 +57,7 @@ export async function PUT(request: NextRequest) {
         .update({
           enabled: body.enabled,
           music_url: body.music_url || '',
+          image_url: body.image_url || '',
           volume: body.volume ?? 0.5,
           loop: body.loop ?? true,
           updated_at: new Date().toISOString()
@@ -75,6 +77,7 @@ export async function PUT(request: NextRequest) {
         .insert({
           enabled: body.enabled,
           music_url: body.music_url || '',
+          image_url: body.image_url || '',
           volume: body.volume ?? 0.5,
           loop: body.loop ?? true
         })

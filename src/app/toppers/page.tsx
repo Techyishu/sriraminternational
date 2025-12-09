@@ -1,47 +1,35 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { usePageContent } from "@/hooks/usePageContent";
+import { Trophy } from "lucide-react";
 
-const defaultContent = {
-    hero: {
-        title: "Toppers",
-        subtitle: "Celebrating Academic Excellence"
-    },
-    description: "We take immense pride in celebrating the academic excellence of our students. Our toppers exemplify dedication, hard work, and the pursuit of knowledge. They inspire their peers and set benchmarks for future generations.",
-    achievements: [
-        {
-            title: "Board Examinations",
-            description: "Outstanding performers in CBSE board examinations across all streams - Science, Commerce, and Arts.",
-            icon: "📚"
-        },
-        {
-            title: "Competitive Exams",
-            description: "Students who have excelled in national-level competitive examinations and Olympiads.",
-            icon: "🏆"
-        },
-        {
-            title: "Scholarship Recipients",
-            description: "Meritorious students who have earned scholarships and recognition for their academic achievements.",
-            icon: "🎓"
-        }
-    ],
-    cta: {
-        title: "Be Our Next Success Story",
-        description: "Join SR INTERNATIONAL and become part of a legacy of academic excellence. With dedicated faculty, comprehensive support, and a nurturing environment, your success is our mission.",
-        buttonText: "Apply for Admission"
-    }
+const heroContent = {
+    title: "Toppers",
+    subtitle: "Celebrating Academic Excellence"
 };
 
 export default function ToppersPage() {
-    const { content, loading } = usePageContent('toppers');
-    
-    const heroContent = content.hero || defaultContent.hero;
-    const description = content.description || defaultContent.description;
-    const achievements = content.achievements || defaultContent.achievements;
-    const cta = content.cta || defaultContent.cta;
+    const [toppers, setToppers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchToppers = async () => {
+            try {
+                const response = await fetch("/api/toppers");
+                const data = await response.json();
+                setToppers(data.toppers || []);
+            } catch (error) {
+                console.error("Error fetching toppers:", error);
+                setToppers([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchToppers();
+    }, []);
 
     if (loading) {
         return (
@@ -72,44 +60,70 @@ export default function ToppersPage() {
 
             {/* Toppers Content */}
             <div className="container mx-auto px-6 py-20">
-                <div className="mb-12 text-center max-w-3xl mx-auto">
-                    <p className="text-gray-600 text-lg leading-relaxed">
-                        {description}
-                    </p>
-                </div>
-
-                {/* Achievement Categories */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    {achievements.map((category: any, index: number) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center"
-                        >
-                            <div className="text-5xl mb-4">{category.icon}</div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-4">{category.title}</h3>
-                            <p className="text-gray-600 leading-relaxed">{category.description}</p>
-                        </motion.div>
-                    ))}
-                </div>
+                {/* Toppers Grid */}
+                {toppers.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {toppers.map((topper: any, index: number) => (
+                            <motion.div
+                                key={topper.id || index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center"
+                            >
+                                {topper.image_url && (
+                                    <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden">
+                                        <Image
+                                            src={topper.image_url}
+                                            alt={topper.name}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                )}
+                                <div className="flex items-center justify-center mb-4">
+                                    <Trophy className="w-8 h-8 text-[#FEC301] mr-2" />
+                                    <h3 className="text-2xl font-bold text-[#002147]">{topper.name}</h3>
+                                </div>
+                                {topper.class && (
+                                    <p className="text-lg text-gray-600 mb-2">Class: {topper.class}</p>
+                                )}
+                                {topper.percentage && (
+                                    <p className="text-2xl font-bold text-[#FEC301] mb-2">{topper.percentage}%</p>
+                                )}
+                                {topper.year && (
+                                    <p className="text-sm text-gray-500 mb-3">Year: {topper.year}</p>
+                                )}
+                                {topper.achievement && (
+                                    <p className="text-sm text-gray-600 leading-relaxed">{topper.achievement}</p>
+                                )}
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20">
+                        <p className="text-gray-500 text-lg">No toppers available yet. Check back soon!</p>
+                    </div>
+                )}
 
                 {/* Call to Action */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="bg-gradient-to-r from-[#002147] to-[#003370] rounded-3xl p-12 text-center text-white"
+                    className="mt-16 bg-gradient-to-r from-[#002147] to-[#003370] rounded-3xl p-12 text-center text-white"
                 >
-                    <h2 className="text-3xl font-bold mb-4">{cta.title}</h2>
+                    <h2 className="text-3xl font-bold mb-4">Be Our Next Success Story</h2>
                     <p className="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">
-                        {cta.description}
+                        Join SR INTERNATIONAL and become part of a legacy of academic excellence. With dedicated faculty, comprehensive support, and a nurturing environment, your success is our mission.
                     </p>
-                    <button className="bg-[#FEC301] text-[#002147] px-8 py-4 rounded-md font-bold text-lg hover:bg-white transition-all shadow-lg">
-                        {cta.buttonText}
-                    </button>
+                    <a
+                        href="/admissions"
+                        className="inline-block bg-[#FEC301] text-[#002147] px-8 py-4 rounded-md font-bold text-lg hover:bg-white transition-all shadow-lg"
+                    >
+                        Apply for Admission
+                    </a>
                 </motion.div>
             </div>
         </main>

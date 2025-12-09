@@ -43,7 +43,7 @@ export default function Footer() {
                     <div>
                         <h4 className="text-lg font-bold mb-6">Quick Links</h4>
                         <ul className="space-y-4 text-gray-400">
-                            {["About Us", "Admissions", "Academics", "Campus Life", "News & Events", "Contact"].map((link) => (
+                            {["About Us", "Admissions", "Campus Life", "News & Events", "Contact"].map((link) => (
                                 <li key={link}>
                                     <a href="#" className="hover:text-[#FEC301] transition-colors">
                                         {link}

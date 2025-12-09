@@ -42,8 +42,8 @@ export default function WelcomeSection() {
                         {/* Main Image */}
                         <div className="relative h-full w-full rounded-lg overflow-hidden shadow-2xl">
                             <Image
-                                src="/images/about-hero.png"
-                                alt="Students on campus"
+                                src="/images/WhatsApp Image 2025-12-08 at 14.16.24.jpeg"
+                                alt="SR International School Campus"
                                 fill
                                 className="object-cover"
                             />

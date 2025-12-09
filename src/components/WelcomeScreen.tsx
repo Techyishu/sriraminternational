@@ -17,35 +17,65 @@ export default function WelcomeScreen() {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   useEffect(() => {
     // Check if user has already entered the website
     const hasEntered = localStorage.getItem("website_entered");
     
     if (hasEntered) {
-      // User has entered before, check if music should play
-      loadMusicSettings(true);
+      // User has entered before, load music settings but don't auto-play
+      // Audio will only play after user interaction (click, touch, etc.)
+      loadMusicSettings();
+    } else {
+      // First time visitor - show welcome screen
+      setShowWelcome(true);
+      loadMusicSettings();
+    }
+  }, []);
+
+  // Handle user interaction for returning visitors to start music
+  useEffect(() => {
+    if (!audio || !musicSettings || !musicSettings.enabled || !musicSettings.music_url || isPlaying) {
       return;
     }
 
-    // First time visitor - show welcome screen
-    setShowWelcome(true);
-    loadMusicSettings(false);
-  }, []);
+    // Add one-time user interaction listener for returning visitors
+    const handleFirstInteraction = () => {
+      setHasUserInteracted(true);
+      // Try to start music after user interaction
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {
+            // Silently handle - user may have blocked autoplay
+            console.log("Audio playback requires explicit user interaction:", error);
+          });
+      }
+    };
+    
+    // Add listeners for user interaction
+    document.addEventListener("click", handleFirstInteraction, { once: true });
+    document.addEventListener("touchstart", handleFirstInteraction, { once: true });
+    
+    return () => {
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("touchstart", handleFirstInteraction);
+    };
+  }, [audio, musicSettings, isPlaying]);
 
-  const loadMusicSettings = async (autoPlay: boolean) => {
+  const loadMusicSettings = async () => {
     try {
       const response = await fetch("/api/music");
       const data = await response.json();
       
       if (data.enabled && data.music_url) {
         setMusicSettings(data);
-        
-        if (autoPlay) {
-          // Auto-play for returning visitors (they've already interacted)
-          initializeAudio(data, true);
-        }
-        // For first-time visitors, music will start after they click "Enter Website"
+        // Initialize audio but don't play yet - will play after user interaction
+        initializeAudio(data, false);
       }
     } catch (error) {
       console.error("Error loading music settings:", error);
@@ -59,20 +89,40 @@ export default function WelcomeScreen() {
     audioElement.volume = settings.volume;
     audioElement.loop = settings.loop;
     
+    // Handle audio ended event
     audioElement.addEventListener("ended", () => {
-      if (settings.loop) {
+      if (settings.loop && isPlaying) {
         audioElement.currentTime = 0;
-        audioElement.play();
+        audioElement.play().catch((error) => {
+          // Silently handle playback errors
+          console.error("Error replaying audio:", error);
+        });
       }
+    });
+
+    // Handle audio errors
+    audioElement.addEventListener("error", (error) => {
+      console.error("Audio error:", error);
     });
 
     setAudio(audioElement);
     
+    // Only attempt to play if explicitly requested and after user interaction
     if (play) {
-      audioElement.play().catch((error) => {
-        console.error("Error playing audio:", error);
-      });
-      setIsPlaying(true);
+      // Use a promise to handle the play() call properly
+      const playPromise = audioElement.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {
+            // Silently handle autoplay errors - user interaction required
+            console.log("Audio playback requires user interaction:", error);
+            setIsPlaying(false);
+          });
+      }
     }
   };
 
@@ -80,8 +130,25 @@ export default function WelcomeScreen() {
     localStorage.setItem("website_entered", "true");
     setShowWelcome(false);
     
-    if (musicSettings) {
-      initializeAudio(musicSettings, true);
+    // Start playing music after user interaction (clicking Enter Website)
+    if (musicSettings && musicSettings.enabled && musicSettings.music_url) {
+      if (audio) {
+        // Audio already initialized, just play it
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch((error) => {
+              console.error("Error playing audio after user interaction:", error);
+              setIsPlaying(false);
+            });
+        }
+      } else {
+        // Initialize and play
+        initializeAudio(musicSettings, true);
+      }
     }
   };
 

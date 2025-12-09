@@ -4,14 +4,12 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const defaultImages = [
-    "/images/mov_7181-YbNvjR4LjLsaMPjN.jpg",
-    "/images/whatsapp-image-2023-09-06-at-5.36.44-am.jpeg-mv0DGRPPoPfVQnXv.jpg",
-    "/images/whatsapp-image-2024-03-10-at-6.30.48-pm.jpeg-AGB6XwzzlNfQpNag.jpg",
-    "/images/whatsapp-image-2024-12-09-at-17.53.59_a545b9dd-AzGeolMMpVH7B2RL.jpg",
-    "/images/whatsapp-image-2024-12-09-at-17.54.00_9cb5ef76-ALpnK42Wvns3O2lK.jpg",
-    "/images/whatsapp-image-2024-12-11-at-09.39.58_cfab3f28-AoPvjXEbpZuapNXx.jpg"
-];
+const heroContent = {
+    title: "Gallery",
+    subtitle: "Capturing Moments, Celebrating Excellence"
+};
+
+const description = "Explore our vibrant school community through these beautiful moments captured throughout the year.";
 
 export default function GalleryPage() {
     const [images, setImages] = useState<any[]>([]);
@@ -25,20 +23,13 @@ export default function GalleryPage() {
                 if (data.images && data.images.length > 0) {
                     setImages(data.images);
                 } else {
-                    // Use default images if database is empty
-                    setImages(defaultImages.map((url, index) => ({
-                        id: `default-${index}`,
-                        image_url: url,
-                        alt_text: `Gallery Image ${index + 1}`
-                    })));
+                    // No images in database - dynamic gallery will be empty
+                    setImages([]);
                 }
             } catch (error) {
                 console.error("Error fetching images:", error);
-                setImages(defaultImages.map((url, index) => ({
-                    id: `default-${index}`,
-                    image_url: url,
-                    alt_text: `Gallery Image ${index + 1}`
-                })));
+                // On error, show empty dynamic gallery
+                setImages([]);
             } finally {
                 setLoading(false);
             }
@@ -74,7 +65,7 @@ export default function GalleryPage() {
                 </div>
             </section>
 
-            {/* Gallery Grid */}
+            {/* Gallery Grid - Dynamic from Admin Panel */}
             <div className="container mx-auto px-6 py-20">
                 <div className="mb-12 text-center">
                     <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -82,26 +73,32 @@ export default function GalleryPage() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {images.map((image: any, index: number) => (
-                        <motion.div
-                            key={image.id || index}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer"
-                        >
-                            <Image
-                                src={image.image_url}
-                                alt={image.alt_text || `Gallery Image ${index + 1}`}
-                                fill
-                                className="object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                        </motion.div>
-                    ))}
-                </div>
+                {images.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {images.map((image: any, index: number) => (
+                            <motion.div
+                                key={image.id || index}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="relative h-[350px] rounded-2xl overflow-hidden shadow-lg group cursor-pointer"
+                            >
+                                <Image
+                                    src={image.image_url}
+                                    alt={image.alt_text || `Gallery Image ${index + 1}`}
+                                    fill
+                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20">
+                        <p className="text-gray-500 text-lg">No images available yet. Check back soon!</p>
+                    </div>
+                )}
             </div>
         </main>
     );

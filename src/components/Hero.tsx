@@ -30,14 +30,14 @@ export default function Hero() {
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
                     <Image
-                        src="/images/home-hero.png"
-                        alt="Campus Background"
+                        src="/images/WhatsApp Image 2025-12-08 at 14.16.25.jpeg"
+                        alt="SR International School Campus"
                         fill
                         className="object-cover"
                         priority
                     />
-                    <div className="absolute inset-0 bg-[#002147]/80 mix-blend-multiply" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-[#002147]/40 mix-blend-multiply" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
                 </div>
 
                 {/* Content */}

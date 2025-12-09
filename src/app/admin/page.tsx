@@ -22,9 +22,14 @@ export default function AdminPanel() {
   const [musicSettings, setMusicSettings] = useState<any>({
     enabled: false,
     music_url: "",
+    image_url: "",
     volume: 0.5,
     loop: true
   });
+  const [musicFile, setMusicFile] = useState<File | null>(null);
+  const [musicImageFile, setMusicImageFile] = useState<File | null>(null);
+  const [musicPreview, setMusicPreview] = useState<string | null>(null);
+  const [musicImagePreview, setMusicImagePreview] = useState<string | null>(null);
   
   // Form states
   const [showForm, setShowForm] = useState(false);
@@ -80,7 +85,17 @@ export default function AdminPanel() {
       } else if (activeTab === "music") {
         const res = await fetch("/api/music");
         const data = await res.json();
-        setMusicSettings(data);
+        // Ensure all fields have default values to prevent controlled/uncontrolled input issues
+        setMusicSettings({
+          enabled: data.enabled ?? false,
+          music_url: data.music_url ?? "",
+          image_url: data.image_url ?? "",
+          volume: data.volume ?? 0.5,
+          loop: data.loop ?? true
+        });
+        if (data.image_url) {
+          setMusicImagePreview(data.image_url);
+        }
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -277,6 +292,54 @@ export default function AdminPanel() {
     router.push("/");
   };
 
+  const handleMusicFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav', 'audio/webm', 'audio/m4a', 'audio/aac'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload an audio file (MP3, OGG, WAV, WEBM, M4A, or AAC)');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+
+    setMusicFile(file);
+    setMusicPreview(URL.createObjectURL(file));
+  };
+
+  const handleMusicImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload an image (PNG, JPEG, GIF, WEBP, or SVG)');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setMusicImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setMusicImageFile(file);
+  };
+
   const saveMusicSettings = async () => {
     if (!token) {
       alert("Please login to save music settings.");
@@ -284,6 +347,55 @@ export default function AdminPanel() {
     }
 
     try {
+      // Upload music file if provided
+      if (musicFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', musicFile);
+        uploadFormData.append('folder', 'music');
+        uploadFormData.append('fileType', 'audio');
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+
+        const uploadData = await uploadResponse.json();
+        if (uploadResponse.ok && uploadData.url) {
+          musicSettings.music_url = uploadData.url;
+        } else {
+          alert(uploadData.error || "Failed to upload music file");
+          return;
+        }
+      }
+
+      // Upload image file if provided
+      if (musicImageFile) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', musicImageFile);
+        uploadFormData.append('folder', 'music');
+        uploadFormData.append('fileType', 'image');
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+
+        const uploadData = await uploadResponse.json();
+        if (uploadResponse.ok && uploadData.url) {
+          musicSettings.image_url = uploadData.url;
+        } else {
+          alert(uploadData.error || "Failed to upload image file");
+          return;
+        }
+      }
+
+      // Save settings
       const response = await fetch("/api/music", {
         method: "PUT",
         headers: {
@@ -295,6 +407,9 @@ export default function AdminPanel() {
 
       if (response.ok) {
         alert("Music settings saved successfully!");
+        setMusicFile(null);
+        setMusicImageFile(null);
+        loadData(); // Reload to get updated URLs
       } else {
         const error = await response.json();
         alert(error.error || "Failed to save music settings");
@@ -998,7 +1113,7 @@ export default function AdminPanel() {
                     <input
                       type="checkbox"
                       id="music-enabled"
-                      checked={musicSettings.enabled}
+                      checked={musicSettings.enabled ?? false}
                       onChange={(e) =>
                         setMusicSettings({ ...musicSettings, enabled: e.target.checked })
                       }
@@ -1013,20 +1128,66 @@ export default function AdminPanel() {
                     <>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Music URL *
+                          Upload Music File *
                         </label>
                         <input
-                          type="text"
-                          value={musicSettings.music_url}
-                          onChange={(e) =>
-                            setMusicSettings({ ...musicSettings, music_url: e.target.value })
-                          }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]"
-                          placeholder="https://example.com/music.mp3 or /music/background.mp3"
+                          type="file"
+                          accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/webm,audio/m4a,audio/aac"
+                          onChange={handleMusicFileChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#002147] file:text-white hover:file:bg-[#003370]"
                         />
                         <p className="text-sm text-gray-500 mt-2">
-                          Enter the URL or path to your music file (MP3, OGG, or WAV format)
+                          Supported: MP3, OGG, WAV, WEBM, M4A, AAC (Max 10MB)
                         </p>
+                        {musicPreview && (
+                          <div className="mt-4">
+                            <audio controls src={musicPreview} className="w-full">
+                              Your browser does not support the audio element.
+                            </audio>
+                          </div>
+                        )}
+                        {musicSettings.music_url && !musicPreview && (
+                          <div className="mt-4">
+                            <p className="text-sm text-gray-600 mb-2">Current Music:</p>
+                            <audio controls src={musicSettings.music_url} className="w-full">
+                              Your browser does not support the audio element.
+                            </audio>
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Upload Music Cover Image (Optional)
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml"
+                          onChange={handleMusicImageFileChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#002147] file:text-white hover:file:bg-[#003370]"
+                        />
+                        <p className="text-sm text-gray-500 mt-2">
+                          Supported: PNG, JPEG, GIF, WEBP, SVG (Max 5MB)
+                        </p>
+                        {musicImagePreview && (
+                          <div className="mt-4">
+                            <img
+                              src={musicImagePreview}
+                              alt="Music cover preview"
+                              className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                            />
+                          </div>
+                        )}
+                        {musicSettings.image_url && !musicImagePreview && (
+                          <div className="mt-4">
+                            <p className="text-sm text-gray-600 mb-2">Current Cover Image:</p>
+                            <img
+                              src={musicSettings.image_url}
+                              alt="Music cover"
+                              className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                            />
+                          </div>
+                        )}
                       </div>
 
                       <div>
@@ -1038,7 +1199,7 @@ export default function AdminPanel() {
                           min="0"
                           max="1"
                           step="0.1"
-                          value={musicSettings.volume}
+                          value={musicSettings.volume ?? 0.5}
                           onChange={(e) =>
                             setMusicSettings({
                               ...musicSettings,
@@ -1053,7 +1214,7 @@ export default function AdminPanel() {
                         <input
                           type="checkbox"
                           id="music-loop"
-                          checked={musicSettings.loop}
+                          checked={musicSettings.loop ?? true}
                           onChange={(e) =>
                             setMusicSettings({ ...musicSettings, loop: e.target.checked })
                           }
