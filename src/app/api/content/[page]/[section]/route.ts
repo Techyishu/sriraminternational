@@ -4,10 +4,10 @@ import { verify } from 'jsonwebtoken';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { page: string; section: string } }
+  { params }: { params: Promise<{ page: string; section: string }> }
 ) {
   try {
-    const { page, section } = params;
+    const { page, section } = await params;
     const body = await request.json();
     
     // Authentication check

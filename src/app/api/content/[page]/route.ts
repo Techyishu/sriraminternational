@@ -3,10 +3,10 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { page: string } }
+  { params }: { params: Promise<{ page: string }> }
 ) {
   try {
-    const { page } = params;
+    const { page } = await params;
     
     const { data, error } = await supabase
       .from('page_content')
