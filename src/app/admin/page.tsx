@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, Plus, Trash2, Mail, Image as ImageIcon, Trophy, Users, Activity, X, Music } from "lucide-react";
+import { LogOut, Plus, Trash2, Mail, Image as ImageIcon, Trophy, Users, Activity, X, Music, FileText, Shield } from "lucide-react";
 
-type Tab = "gallery" | "toppers" | "staff" | "activities" | "contact" | "music";
+type Tab = "gallery" | "toppers" | "staff" | "activities" | "contact" | "music" | "slc" | "disclosures";
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -18,6 +18,8 @@ export default function AdminPanel() {
   const [toppers, setToppers] = useState<any[]>([]);
   const [staff, setStaff] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
+  const [slcRecords, setSlcRecords] = useState<any[]>([]);
+  const [disclosures, setDisclosures] = useState<any[]>([]);
   const [contactSubmissions, setContactSubmissions] = useState<any[]>([]);
   const [musicSettings, setMusicSettings] = useState<any>({
     enabled: false,
@@ -119,6 +121,14 @@ export default function AdminPanel() {
         if (data.image_url) {
           setMusicImagePreview(data.image_url);
         }
+      } else if (activeTab === "slc") {
+        const res = await fetch("/api/slc");
+        const data = await res.json();
+        setSlcRecords(data.records || []);
+      } else if (activeTab === "disclosures") {
+        const res = await fetch("/api/disclosures");
+        const data = await res.json();
+        setDisclosures(data.disclosures || []);
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -252,6 +262,8 @@ export default function AdminPanel() {
       else if (activeTab === "toppers") endpoint = "/api/toppers";
       else if (activeTab === "staff") endpoint = "/api/staff";
       else if (activeTab === "activities") endpoint = "/api/activities";
+      else if (activeTab === "slc") endpoint = "/api/slc";
+      else if (activeTab === "disclosures") endpoint = "/api/disclosures";
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -290,6 +302,8 @@ export default function AdminPanel() {
       else if (activeTab === "toppers") endpoint = `/api/toppers?id=${id}`;
       else if (activeTab === "staff") endpoint = `/api/staff?id=${id}`;
       else if (activeTab === "activities") endpoint = `/api/activities?id=${id}`;
+      else if (activeTab === "slc") endpoint = `/api/slc?id=${id}`;
+      else if (activeTab === "disclosures") endpoint = `/api/disclosures?id=${id}`;
 
       const response = await fetch(endpoint, {
         method: "DELETE",
@@ -567,6 +581,8 @@ export default function AdminPanel() {
               { id: "activities" as Tab, name: "Activities", icon: Activity },
               { id: "contact" as Tab, name: "Contact Forms", icon: Mail },
               { id: "music" as Tab, name: "Music Settings", icon: Music },
+              { id: "slc" as Tab, name: "SLC Records", icon: FileText },
+              { id: "disclosures" as Tab, name: "Disclosures", icon: Shield },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -962,6 +978,84 @@ export default function AdminPanel() {
                     </>
                   )}
 
+                  {activeTab === "slc" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Student Name *</label>
+                        <input type="text" required value={formData.student_name || ""} onChange={(e) => setFormData({ ...formData, student_name: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Father&apos;s Name</label>
+                        <input type="text" value={formData.father_name || ""} onChange={(e) => setFormData({ ...formData, father_name: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Class</label>
+                          <input type="text" value={formData.class || ""} onChange={(e) => setFormData({ ...formData, class: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                          <input type="text" value={formData.section || ""} onChange={(e) => setFormData({ ...formData, section: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Admission No</label>
+                          <input type="text" value={formData.admission_no || ""} onChange={(e) => setFormData({ ...formData, admission_no: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">SLC No</label>
+                          <input type="text" value={formData.slc_no || ""} onChange={(e) => setFormData({ ...formData, slc_no: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Date of Issue</label>
+                          <input type="text" value={formData.date_of_issue || ""} onChange={(e) => setFormData({ ...formData, date_of_issue: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" placeholder="DD/MM/YYYY" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+                          <input type="text" value={formData.academic_year || ""} onChange={(e) => setFormData({ ...formData, academic_year: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" placeholder="2024-2025" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                        <input type="text" value={formData.reason || ""} onChange={(e) => setFormData({ ...formData, reason: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                        <textarea value={formData.remarks || ""} onChange={(e) => setFormData({ ...formData, remarks: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" rows={2} />
+                      </div>
+                    </>
+                  )}
+
+                  {activeTab === "disclosures" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                        <select required value={formData.category || ""} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] bg-white">
+                          <option value="">Select Category</option>
+                          <option value="General Information">General Information</option>
+                          <option value="School Infrastructure">School Infrastructure</option>
+                          <option value="Teaching Staff">Teaching Staff</option>
+                          <option value="Academics">Academics</option>
+                          <option value="Fee Structure">Fee Structure</option>
+                          <option value="Recognition & Affiliation">Recognition & Affiliation</option>
+                          <option value="Contact Details">Contact Details</option>
+                          <option value="Results">Results</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                        <input type="text" required value={formData.title || ""} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" placeholder="e.g. School Name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Value *</label>
+                        <textarea required value={formData.value || ""} onChange={(e) => setFormData({ ...formData, value: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147]" rows={3} placeholder="e.g. S.R. International School" />
+                      </div>
+                    </>
+                  )}
+
                   <div className="flex gap-4 pt-4">
                     <button
                       type="submit"
@@ -1091,6 +1185,61 @@ export default function AdminPanel() {
                   </div>
                   <button
                     onClick={() => handleDelete(activity.id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              ))}
+
+            {activeTab === "slc" &&
+              slcRecords.map((record) => (
+                <div
+                  key={record.id}
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                    <FileText size={20} className="text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-lg">{record.student_name}</p>
+                    <p className="text-sm text-gray-600">
+                      {record.class && `Class ${record.class}`}{record.section && ` - ${record.section}`}
+                      {record.admission_no && ` | Adm: ${record.admission_no}`}
+                      {record.slc_no && ` | SLC: ${record.slc_no}`}
+                    </p>
+                    {record.father_name && (
+                      <p className="text-sm text-gray-500">Father: {record.father_name}</p>
+                    )}
+                    {record.date_of_issue && (
+                      <p className="text-xs text-gray-400 mt-1">Issued: {record.date_of_issue}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleDelete(record.id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              ))}
+
+            {activeTab === "disclosures" &&
+              disclosures.map((disclosure) => (
+                <div
+                  key={disclosure.id}
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg"
+                >
+                  <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0">
+                    <Shield size={20} className="text-indigo-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">{disclosure.category}</p>
+                    <p className="font-bold text-gray-900">{disclosure.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">{disclosure.value}</p>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(disclosure.id)}
                     className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                   >
                     <Trash2 size={18} />
@@ -1299,7 +1448,9 @@ export default function AdminPanel() {
               ((activeTab === "gallery" && galleryImages.length === 0) ||
                 (activeTab === "toppers" && toppers.length === 0) ||
                 (activeTab === "staff" && staff.length === 0) ||
-                (activeTab === "activities" && activities.length === 0)) && (
+                (activeTab === "activities" && activities.length === 0) ||
+                (activeTab === "slc" && slcRecords.length === 0) ||
+                (activeTab === "disclosures" && disclosures.length === 0)) && (
                 <div className="text-center py-12 text-gray-500">
                   <p>No items yet. Click "Add New" to get started.</p>
                 </div>

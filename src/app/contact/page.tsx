@@ -147,7 +147,7 @@ export default function ContactPage() {
                             <h2 className="text-4xl font-serif font-bold text-gray-900 mb-8">Get in Touch</h2>
                             <div className="space-y-8">
                                 {[
-                                    { icon: MapPin, title: "Address", content: ["Lalupura,", "Uttar Pradesh, India"] },
+                                    { icon: MapPin, title: "Address", content: ["Village- Lalupura,", "Distt Karnal, Haryana"] },
                                     { icon: Phone, title: "Phone", content: ["+91 9991702040"] },
                                     { icon: Mail, title: "Email", content: ["srisofficial007@gmail.com"] },
                                     { icon: Clock, title: "Office Hours", content: ["Monday - Saturday: 8:00 AM - 4:00 PM", "Sunday: Closed"] }

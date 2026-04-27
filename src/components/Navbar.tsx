@@ -30,6 +30,8 @@ export default function Navbar() {
         { name: "Gallery", href: "/gallery" },
         { name: "Toppers", href: "/toppers" },
         { name: "Staff", href: "/staff" },
+        { name: "SLC", href: "/slc" },
+        { name: "Disclosure", href: "/mandatory-disclosure" },
         { name: "Contact", href: "/contact" },
     ];
 
@@ -41,7 +43,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2">
                             <MapPin size={14} className="text-[#FEC301]" />
-                            <span>Lalupura, Uttar Pradesh, India</span>
+                            <span>Village- Lalupura, Distt Karnal, Haryana</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Mail size={14} className="text-[#FEC301]" />

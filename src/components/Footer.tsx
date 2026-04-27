@@ -57,8 +57,8 @@ export default function Footer() {
                     <div>
                         <h4 className="text-lg font-bold mb-6">Contact Us</h4>
                         <ul className="space-y-4 text-gray-400">
-                            <li>Lalupura,</li>
-                            <li>Uttar Pradesh, India</li>
+                            <li>Village- Lalupura,</li>
+                            <li>Distt Karnal, Haryana</li>
                             <li>+91 9991702040</li>
                             <li>srisofficial007@gmail.com</li>
                         </ul>
