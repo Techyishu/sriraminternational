@@ -10,7 +10,7 @@ export default function AdminPanel() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<Tab>("gallery");
   
   // Data states
@@ -40,39 +40,22 @@ export default function AdminPanel() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const storedToken = localStorage.getItem("admin_token");
-    if (storedToken) {
-      // Validate token before using it
+    // Check auth status via httpOnly cookie
+    const checkAuth = async () => {
       try {
-        // Decode token to check expiration (without verification, just to check expiry)
-        const payload = JSON.parse(atob(storedToken.split('.')[1]));
-        const now = Math.floor(Date.now() / 1000);
-        
-        if (payload.exp && payload.exp < now) {
-          // Token expired, remove it
-          localStorage.removeItem("admin_token");
-          setToken(null);
+        const res = await fetch("/api/admin/me");
+        if (res.ok) {
+          setIsAuthenticated(true);
+        } else {
           setIsAuthenticated(false);
-          setLoading(false);
-          return;
         }
-        
-        setToken(storedToken);
-        setIsAuthenticated(true);
-        setLoading(false);
-        loadData();
-      } catch (error) {
-        // Invalid token format, remove it
-        console.error("Invalid token format:", error);
-        localStorage.removeItem("admin_token");
-        setToken(null);
+      } catch {
         setIsAuthenticated(false);
+      } finally {
         setLoading(false);
       }
-    } else {
-      setLoading(false);
-    }
+    };
+    checkAuth();
   }, []);
 
   useEffect(() => {
@@ -82,10 +65,9 @@ export default function AdminPanel() {
   }, [activeTab, isAuthenticated]);
 
   const loadData = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     
     try {
-      const headers = { Authorization: `Bearer ${token}` };
       
       if (activeTab === "gallery") {
         const res = await fetch("/api/gallery");
@@ -104,7 +86,7 @@ export default function AdminPanel() {
         const data = await res.json();
         setActivities(data.activities || []);
       } else if (activeTab === "contact") {
-        const res = await fetch("/api/contact/submissions", { headers });
+        const res = await fetch("/api/contact/submissions");
         const data = await res.json();
         setContactSubmissions(data.submissions || []);
       } else if (activeTab === "music") {
@@ -151,8 +133,7 @@ export default function AdminPanel() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("admin_token", data.token);
-        setToken(data.token);
+        // Cookie is set automatically by the server (httpOnly)
         setIsAuthenticated(true);
         loadData();
       } else {
@@ -168,7 +149,7 @@ export default function AdminPanel() {
   };
 
   const handleImageUpload = async (file: File, folder: string): Promise<string | null> => {
-    if (!token) return null;
+    if (!isAuthenticated) return null;
 
     setUploadingImage(true);
     try {
@@ -178,9 +159,6 @@ export default function AdminPanel() {
 
       const uploadResponse = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: uploadFormData,
       });
 
@@ -205,9 +183,9 @@ export default function AdminPanel() {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Invalid file type. Please upload an image (PNG, JPEG, GIF, WEBP, or SVG)');
+      alert('Invalid file type. Please upload an image (PNG, JPEG, GIF, or WEBP)');
       return;
     }
 
@@ -233,7 +211,7 @@ export default function AdminPanel() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) {
+    if (!isAuthenticated) {
       alert("Please login to add items.");
       return;
     }
@@ -251,7 +229,6 @@ export default function AdminPanel() {
     try {
       const headers = {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       };
 
       // Remove imageFile from formData before sending
@@ -288,14 +265,13 @@ export default function AdminPanel() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!token) {
+    if (!isAuthenticated) {
       alert("Please login to delete items.");
       return;
     }
     if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const headers = { Authorization: `Bearer ${token}` };
       let endpoint = "";
 
       if (activeTab === "gallery") endpoint = `/api/gallery?id=${id}`;
@@ -307,7 +283,6 @@ export default function AdminPanel() {
 
       const response = await fetch(endpoint, {
         method: "DELETE",
-        headers,
       });
 
       let data;
@@ -323,21 +298,11 @@ export default function AdminPanel() {
         alert("Item deleted successfully!");
         loadData();
       } else {
-        // Handle 401 Unauthorized - token might be invalid or expired
         if (response.status === 401) {
-          console.error("Authentication failed. Token may be expired or invalid.");
-          localStorage.removeItem("admin_token");
-          setToken(null);
           setIsAuthenticated(false);
           alert("Your session has expired. Please login again.");
           return;
         }
-        
-        console.error("Delete error:", {
-          status: response.status,
-          statusText: response.statusText,
-          data: data
-        });
         alert(data.error || `Failed to delete item (${response.status})`);
       }
     } catch (error) {
@@ -346,10 +311,11 @@ export default function AdminPanel() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("admin_token");
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch {}
     setIsAuthenticated(false);
-    setToken(null);
     router.push("/");
   };
 
@@ -379,9 +345,9 @@ export default function AdminPanel() {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Invalid file type. Please upload an image (PNG, JPEG, GIF, WEBP, or SVG)');
+      alert('Invalid file type. Please upload an image (PNG, JPEG, GIF, or WEBP)');
       return;
     }
 
@@ -402,7 +368,7 @@ export default function AdminPanel() {
   };
 
   const saveMusicSettings = async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       alert("Please login to save music settings.");
       return;
     }
@@ -417,9 +383,6 @@ export default function AdminPanel() {
 
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
           body: uploadFormData,
         });
 
@@ -441,9 +404,6 @@ export default function AdminPanel() {
 
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
           body: uploadFormData,
         });
 
@@ -461,7 +421,6 @@ export default function AdminPanel() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(musicSettings),
       });
@@ -481,7 +440,7 @@ export default function AdminPanel() {
   };
 
   const markAsRead = async (id: string) => {
-    if (!token) {
+    if (!isAuthenticated) {
       alert("Please login to mark submissions as read.");
       return;
     }
@@ -491,7 +450,6 @@ export default function AdminPanel() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ id, read: true }),
       });
